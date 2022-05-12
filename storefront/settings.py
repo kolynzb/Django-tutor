@@ -32,14 +32,15 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.sessions',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sessions',
     'playground',
     'debug_toolbar',
     'store',
+    'store_custom',
     'tags',
     'likes'
 ]
@@ -86,21 +87,11 @@ WSGI_APPLICATION = 'storefront.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':BASE_DIR / 'db.sqlite3',
-        
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'storefront',
-#         'HOST': 'localhost',
-#         'USER': 'root',
-#         'PASSWORD': 'MyPassword'
-#     }
-# }
 
 
 # Password validation
