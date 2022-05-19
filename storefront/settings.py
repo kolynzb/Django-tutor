@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'playground',
     'debug_toolbar',
     'store',
@@ -139,5 +140,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     # render decimals instead of strings
-    'COERE_DECIMAL_TO_STRING':False
+    'COERE_DECIMAL_TO_STRING':False,
+    # 'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination', to add pagination to all views
+    # 'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.LimitOffsetPagination', to add pagination with limits
+    'PAGE_SIZE':10
 }

@@ -5,6 +5,7 @@ from . import views
 # from rest_framework.routers import SimpleRouter
 from rest_framework_nested import routers
 
+
 # ue can use default route to show urls at the route when ue add .json at the end get all the products in json
 #  To make nested routes get django drf-nested-routers
 # router = SimpleRouter()
