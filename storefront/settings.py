@@ -36,8 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'django_filters',
+    'rest_framework',
+    'djoser',
     'playground',
     'debug_toolbar',
     'store',
@@ -143,8 +144,13 @@ REST_FRAMEWORK = {
     'COERE_DECIMAL_TO_STRING':False,
     # 'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination', to add pagination to all views
     # 'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.LimitOffsetPagination', to add pagination with limits
-    'PAGE_SIZE':10
+    'PAGE_SIZE':10,
+    'DEFAULT_AUTHENTICATION_CLASSES':('rest_framework_simplejwt.authentication.JWTAuthentication'),
+
 }
 
+SIMPLE_JWT ={
+    'AUTH_HEADER_TYPES':('JWT')
+}
 # for edited user fields, 
 AUTH_USER_MODEL = 'core.User'
