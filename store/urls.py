@@ -12,18 +12,23 @@ from rest_framework_nested import routers
 router = routers.DefaultRouter()
 router.register('product',views.ProductViewSet)
 router.register('collections',views.CollectionViewSet)
+router.register('carts',views.CartViewSet)
 
 products_router = routers.NestedDefaultRouter(router,'products',lookup='product_pk')
 products_router.register('reviews',views.ReviewViewSet,basename='product-reviews')
+
+carts_router = routers.NestedDefaultRouter(router,'carts',lookup='cart_pk')
+carts_router.register('items',views.CartItemViewSet,basename='cart-items')
 # pprint(router.urls)
 # URLConf
 
 
-# urlpatterns = router.urls 
-urlpatterns = [
-path('',include(router.urls)),
-path('',include(products_router.urls)),
-]
+urlpatterns = router.urls  + products_router.urls + carts_router.urls
+# urlpatterns = [
+# path('',include(router.urls)),
+# path('',include(products_router.urls)),
+# path('',include(carts_router.urls)),
+# ]
 # urlpatterns = [
 #     path('products/', views.ProductList.as_view),
 #     path('products/<int:pk>', views.product_detail),
