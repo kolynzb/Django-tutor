@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'playground',
     'debug_toolbar',
     'store',
-    'store_custom',
     'tags',
     'likes'
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -145,3 +145,6 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.LimitOffsetPagination', to add pagination with limits
     'PAGE_SIZE':10
 }
+
+# for edited user fields, 
+AUTH_USER_MODEL = 'core.User'
