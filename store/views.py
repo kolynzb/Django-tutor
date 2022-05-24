@@ -5,6 +5,8 @@ from html5lib import serialize
 
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
+
+from store.permissions import IsAdminOrReadOnly
 from .models import Cart, CartItem, Customer, Product
 from store import serializers
 from store.filters import ProductFilter
@@ -18,6 +20,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter,OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin,DestroyModelMixin,UpdateModelMixin
+from rest_framework.permissions import IsAuthenticated,AllowAny
 # Create your views here.
 
 
@@ -122,6 +125,7 @@ class ProductDetailWithGenericAndSearchFilterAndSortAndPagination(RetrieveUpdate
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes=[IsAdminOrReadOnly]
 
     def get_serializer_context(self):
         return {'request':self.request}
@@ -181,11 +185,14 @@ class CartItemViewSet(ModelViewSet):
     def get_queryset(self):
         return CartItem.objects.filter(cart_id=self.kwargs(['cart_pk'])).select_related('product') 
 
-class CustomerViewSet(CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,GenericViewSet):
+class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    permission_classes =[FullDjangoModelPermissions]
 
-    @action(detail=False,methods=['GET','PUT'])
+    
+
+    @action(detail=False,methods=['GET','PUT'],permission_classes=[IsAuthenticated])
     # available on list false on detail view true
     def me(self,request):
         (customer,created_at)=Customer.objects.get_or_create(user_id=request.user.id)
@@ -197,6 +204,28 @@ class CustomerViewSet(CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,Gener
             serializer.is_valid(raise_exceptions=True)
             serializer.save()
             return Response(serializer.data)
+# class CustomerViewSet(CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,GenericViewSet):
+#     queryset = Customer.objects.all()
+#     serializer_class = CustomerSerializer
+#     # permission_classes =[IsAuthenticated]
+
+#     def get_permissions(self):
+#         if  self.request.method == 'GET':
+#             return[AllowAny()]
+#         return [IsAuthenticated()]
+
+#     @action(detail=False,methods=['GET','PUT'])
+#     # available on list false on detail view true
+#     def me(self,request):
+#         (customer,created_at)=Customer.objects.get_or_create(user_id=request.user.id)
+#         if request.method == 'GET':
+#             serializer = CustomerSerializer(customer)
+#             return Response(serializer.data)
+#         elif request.method == 'PUT':
+#             serializer = CustomerSerializer(customer,data=request.data)
+#             serializer.is_valid(raise_exceptions=True)
+#             serializer.save()
+#             return Response(serializer.data)
 
 
             
