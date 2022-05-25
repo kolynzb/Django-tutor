@@ -190,7 +190,10 @@ class CustomerViewSet(ModelViewSet):
     serializer_class = CustomerSerializer
     permission_classes =[FullDjangoModelPermissions]
 
-    
+# always add permissions to groups then add users to those groups
+    @action(detail=True,permission_classes=['ViewCustomerHistoryPermission'])
+    def history(self, request, pk):
+        return Response('Ok')
 
     @action(detail=False,methods=['GET','PUT'],permission_classes=[IsAuthenticated])
     # available on list false on detail view true
