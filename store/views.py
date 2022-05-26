@@ -7,11 +7,11 @@ from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 
 from store.permissions import IsAdminOrReadOnly
-from .models import Cart, CartItem, Customer, Product
+from .models import Cart, CartItem, Customer, Order, Product
 from store import serializers
 from store.filters import ProductFilter
 from store.models import Collection, OrderItem, Review
-from store.serializers import AddCartItemSerializer, AddCartSerializer, CartItemSerializer, CartSerializer, CollectionSerializer, CustomerSerializer, ProductSerializer, ReviewSerializer, UpdateCartItemSerializer
+from store.serializers import AddCartItemSerializer, AddCartSerializer, CartItemSerializer, CartSerializer, CollectionSerializer, CreateOrderSerializer, CustomerSerializer, OrderSerializer, ProductSerializer, ReviewSerializer, UpdateCartItemSerializer, UpdateOrderSerializer
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
@@ -230,6 +230,34 @@ class CustomerViewSet(ModelViewSet):
 #             serializer.save()
 #             return Response(serializer.data)
 
+class OrderViewSet(ModelViewSet):
+    http_method_names=['get','patch','delete','head','options']
+    def get_permissions(self):
+        if self.request.method in ['PUT','PATCH','DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
+    def create(self, request):
+        serializer = CreateOrderSerializer(data=request.data,context={'user_id':self.request.user.id})
+        serializer.is_valid(raise_exceptions=True)
+        order =serializer.save()
+        serializer=OrderSerializer(order)
+        return Response(serializer.data)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        if self.request.method == 'PATCH':
+            return UpdateOrderSerializer
+        return OrderSerializer
+    # def get_serializer_context(self):
+    #     return {'user_id':self.request.user.id}
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all()
+        (customer_id,created)=Customer.objects.only('id').get_or_create(user_id=self.request.user.id)
+        return Order.objects.filter(customer_id=customer_id)
+
+# Command Query Separation Principle
 
             
 
