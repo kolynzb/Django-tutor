@@ -5,6 +5,7 @@ from decimal import Decimal
 from store import models
 from store.models import Cart, CartItem, Customer, Order, OrderItem, Product,Collection, Review
 from django.db import transaction
+from .signals import order_created
 
 # # serializers convert a model instance to a dictionary
 # class ProductSerializer(serializers.Serializer):
@@ -154,7 +155,7 @@ class CreateOrderSerializer(serializers.BaseSerializer):
 
     def save(self, **kwargs):
         with transaction.atomic():
-            (customer,created) = Customer.objects.get_or_create(user_id=self.context['user_id'])
+            customer = Customer.objects.get(user_id=self.context['user_id'])
             order=Order.objects.create(customer=customer)
             cart_items = CartItem.objects \
                 .select_related('product') \
@@ -169,6 +170,7 @@ class CreateOrderSerializer(serializers.BaseSerializer):
             OrderItem.objects.bulk_create(order_items)
             Cart.objects.filter(pk=self.validated_data['cart_id']).delete()
 
+            order_created.send_robust(self.__class__,order=order)
             return order
 
         

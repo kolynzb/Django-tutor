@@ -198,7 +198,7 @@ class CustomerViewSet(ModelViewSet):
     @action(detail=False,methods=['GET','PUT'],permission_classes=[IsAuthenticated])
     # available on list false on detail view true
     def me(self,request):
-        (customer,created_at)=Customer.objects.get_or_create(user_id=request.user.id)
+        customer=Customer.objects.get(user_id=request.user.id)
         if request.method == 'GET':
             serializer = CustomerSerializer(customer)
             return Response(serializer.data)
@@ -231,7 +231,7 @@ class CustomerViewSet(ModelViewSet):
 #             return Response(serializer.data)
 
 class OrderViewSet(ModelViewSet):
-    http_method_names=['get','patch','delete','head','options']
+    http_method_names=['get','post','patch','delete','head','options']
     def get_permissions(self):
         if self.request.method in ['PUT','PATCH','DELETE']:
             return [IsAdminUser()]
@@ -254,7 +254,8 @@ class OrderViewSet(ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Order.objects.all()
-        (customer_id,created)=Customer.objects.only('id').get_or_create(user_id=self.request.user.id)
+        customer_id=Customer.objects.only('id').get(user_id=self.request.user.id)
+
         return Order.objects.filter(customer_id=customer_id)
 
 # Command Query Separation Principle
