@@ -260,5 +260,4 @@ class OrderViewSet(ModelViewSet):
 
 # Command Query Separation Principle
 
-            
 
